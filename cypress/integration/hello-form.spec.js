@@ -1,21 +1,42 @@
-describe('Hello world component', () => {
-    it('does not display on load', () => {
-        cy.get('[data-testid="hello-world-output"]')
-            .should('have.length', 0)
-    })
+describe("Hello world component", () => {
+  const typeInToDoInput = term => {
+    return cy
+      .get('[data-testid="hello-world-input"]')
+      .type(`{selectall}{del}${term}`);
+  };
 
-    it('Displays the appropriate message', () => {
-        cy.visit('/')
+  const addToDo = toDo => {
+    return cy.get(".new-todo").type(toDo);
+  };
 
-        // get the input by its test id and type "Hello"
+  const assertOutputIsCorrect = term => {
+    cy.get('[data-testid="hello-world-output"]').should(
+      "contain",
+      `${term}, World!`
+    );
+  };
+  it("does not display on load", () => {
+    cy.get('[data-testid="hello-world-output"]').should("have.length", 0);
+  });
 
-        // get the output and insure that it contains "Hello, World!"
+  it("Displays the appropriate message", () => {
+    cy.visit("/");
 
-        // change the text to say "What a wonderful, World!"
-        // reference https://docs.cypress.io/api/commands/type.html
+    // get the input by its test id and type "Hello"
+    cy.get('[data-testid="hello-world-input"]').type("Hello");
 
-        cy.get('[data-testid="hello-world-output"]')
-            .should('not.contain', 'Hello')
+    // get the output and insure that it contains "Hello, World!"
+    cy.get('[data-testid="hello-world-output"]').should(
+      "contain",
+      "Hello, World!"
+    );
 
-    })
-})
+    // change the text to say "What a wonderful, World!"
+    const termToCheck = "What a wonderful";
+    typeInToDoInput(termToCheck);
+    assertOutputIsCorrect(termToCheck);
+    // reference https://docs.cypress.io/api/commands/type.html
+
+    cy.get('[data-testid="hello-world-output"]').should("not.contain", "Hello");
+  });
+});
